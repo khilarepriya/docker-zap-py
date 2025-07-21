@@ -29,11 +29,11 @@ pipeline {
     stage('Run ZAP Baseline Scan') {
       steps {
         sh '''
-          docker run --rm -v $PWD:/zap/wrk/:rw \
-            owasp/zap2docker-stable zap-baseline.py \
-            -t $TARGET_URL \
+          docker run --rm -v ${WORKSPACE}:/zap/wrk/:rw \
+            owasp/zap2docker-weekly zap-baseline.py \
+            -t ${TARGET_URL} \
             -g gen.conf \
-            -r $ZAP_REPORT || true
+            -r ${ZAP_REPORT} || true
         '''
       }
     }
