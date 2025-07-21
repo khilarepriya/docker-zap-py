@@ -30,7 +30,7 @@ pipeline {
       steps {
         sh '''
           docker run --rm -v ${WORKSPACE}:/zap/wrk/:rw \
-            ghcr.io/zaproxy/zap-stable zap-baseline.py \
+            zaproxy/zap-baseline \
             -t ${TARGET_URL} \
             -g gen.conf \
             -r ${ZAP_REPORT} || true
