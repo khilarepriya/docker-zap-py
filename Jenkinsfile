@@ -33,7 +33,7 @@ pipeline {
       steps {
         sh '''
           docker run --rm -v ${WORKSPACE}:/zap/wrk/:rw \
-            ghcr.io/zaproxy/zap-baseline \
+            ghcr.io/zaproxy/zap-baseline:2024-05-06 \
             -t http://localhost:5020 \
             -g gen.conf \
             -r zap_report.html
