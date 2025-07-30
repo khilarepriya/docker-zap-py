@@ -35,7 +35,7 @@ pipeline {
           sh '''
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker run --rm -v $WORKSPACE:/zap/wrk/:rw \
-              ghcr.io/zaproxy/zap-baseline:2024-05-20 \
+              ghcr.io/zaproxy/zap-full-scan:latest \
               -t http://localhost:5020 \
               -g gen.conf \
               -r zap_report.html
