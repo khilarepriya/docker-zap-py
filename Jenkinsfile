@@ -31,13 +31,16 @@ pipeline {
 
     stage('Run ZAP Baseline Scan') {
       steps {
-        sh '''
-          docker run --rm -v ${WORKSPACE}:/zap/wrk/:rw \
-            ghcr.io/zaproxy/zap-baseline:2024-05-06 \
-            -t http://localhost:5020 \
-            -g gen.conf \
-            -r zap_report.html
-        '''
+        withCredentials([usernamePassword(credentialsId: 'ghcr-creds', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_PAT')]) {
+          sh '''
+            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker run --rm -v $WORKSPACE:/zap/wrk/:rw \
+              ghcr.io/zaproxy/zap-baseline:2024-05-06 \
+              -t http://localhost:5020 \
+              -g gen.conf \
+              -r zap_report.html
+          '''
+        }
       }
     }
 
