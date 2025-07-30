@@ -2,15 +2,22 @@ pipeline {
   agent any
 
   environment {
-    TARGET_URL = "http://localhost:5020"
+    TARGET_URL = "http://docker-zap-py:5000"
     ZAP_REPORT = "zap_report.html"
     ZAP_IMAGE = "ghcr.io/zaproxy/zaproxy:weekly"
+    NETWORK = "zap-net"
   }
 
   stages {
     stage('Checkout Code') {
       steps {
         git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/khilarepriya/docker-zap-py.git'
+      }
+    }
+
+    stage('Create Docker Network') {
+      steps {
+        sh 'docker network create $NETWORK || true'
       }
     }
 
@@ -24,7 +31,7 @@ pipeline {
       steps {
         sh '''
           docker rm -f docker-zap-py || true
-          docker run -d --name docker-zap-py -p 5020:5000 docker-zap-py
+          docker run -d --name docker-zap-py --network $NETWORK -p 5020:5000 docker-zap-py
           sleep 10
         '''
       }
@@ -36,7 +43,7 @@ pipeline {
           sh '''
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
-            docker run --rm -v $WORKSPACE:/zap/wrk/:rw \
+            docker run --rm --network $NETWORK -v $WORKSPACE:/zap/wrk/:rw \
               $ZAP_IMAGE \
               zap-baseline.py \
               -t $TARGET_URL \
@@ -47,7 +54,7 @@ pipeline {
       }
     }
 
-    stage('Publish Report') {
+    stage('Publish ZAP Report') {
       steps {
         publishHTML([
           allowMissing: false,
@@ -73,6 +80,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: "${ZAP_REPORT}", fingerprint: true
+      sh 'docker network rm $NETWORK || true'
     }
   }
 }
