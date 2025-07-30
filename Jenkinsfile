@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    TARGET_URL = "http://docker-zap-py:5000"
+    TARGET_URL = "http://docker-zap-py:5020"
     ZAP_REPORT = "zap_report.html"
     ZAP_IMAGE = "ghcr.io/zaproxy/zaproxy:weekly"
     NETWORK = "zap-net"
@@ -31,8 +31,14 @@ pipeline {
       steps {
         sh '''
           docker rm -f docker-zap-py || true
-          docker run -d --name docker-zap-py --network $NETWORK -p 5020:5000 docker-zap-py
-          sleep 10
+          docker run -d --name docker-zap-py --network $NETWORK -p 5020:5020 docker-zap-py
+
+          echo "⏳ Waiting for app to respond on internal port 5020..."
+          for i in {1..10}; do
+            docker run --rm --network $NETWORK curlimages/curl curl -s http://docker-zap-py:5020 && break
+            echo "Waiting ($i)..."
+            sleep 5
+          done
         '''
       }
     }
