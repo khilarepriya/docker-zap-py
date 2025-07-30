@@ -21,6 +21,7 @@ pipeline {
 
     stage('Start App') {
       steps {
+        docker rm -f docker-zap-py || true
         sh 'docker run -d --name docker-zap-py -p 5000:5000 docker-zap-py'
         sleep 10 // wait for app to start
       }
