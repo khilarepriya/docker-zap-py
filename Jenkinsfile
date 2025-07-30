@@ -31,18 +31,16 @@ pipeline {
 
     stage('Run ZAP Baseline Scan') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'ghcr-creds', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_PAT')]) {
-          sh '''
-            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
-            docker run --rm -v $WORKSPACE:/zap/wrk/:rw \
-              ghcr.io/zaproxy/zap-full-scan:latest \
-              -t http://localhost:5020 \
-              -g gen.conf \
-              -r zap_report.html
-          '''
-        }
+        sh '''
+          docker run --rm -v $WORKSPACE:/zap/wrk/:rw \
+            owasp/zap2docker-stable zap-baseline.py \
+            -t http://localhost:5020 \
+            -g gen.conf \
+            -r zap_report.html
+        '''
       }
     }
+
 
     stage('Publish Report') {
       steps {
