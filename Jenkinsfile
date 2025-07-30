@@ -33,14 +33,13 @@ pipeline {
       steps {
         sh '''
           docker run --rm -v $WORKSPACE:/zap/wrk/:rw \
-            owasp/zap2docker-stable zap-baseline.py \
+            owasp/zap2docker-weekly zap-baseline.py \
             -t http://localhost:5020 \
             -g gen.conf \
             -r zap_report.html
         '''
       }
     }
-
 
     stage('Publish Report') {
       steps {
