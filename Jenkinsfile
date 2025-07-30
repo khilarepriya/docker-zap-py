@@ -30,10 +30,10 @@ pipeline {
       steps {
         sh '''
           docker run --rm -v ${WORKSPACE}:/zap/wrk/:rw \
-            zaproxy/zap zap-baseline.py \
-            -t ${TARGET_URL} \
+            owasp/zap2docker-stable zap-baseline.py \
+            -t http://localhost:5020 \
             -g gen.conf \
-            -r ${ZAP_REPORT} || true
+            -r zap_report.html
         '''
       }
     }
