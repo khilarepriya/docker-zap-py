@@ -1,25 +1,26 @@
-from flask import Flask, make_response
+from flask import Flask, make_response, request
 
 app = Flask(__name__)
 
-# 🔐 Function to apply all security headers
+# 🔒 Helper to apply Spectre protection + CSP
 def secure_response(content, status=200, mimetype="text/html"):
     response = make_response(content, status)
     response.mimetype = mimetype
 
-    # Security Headers
+    # ✅ Required headers for Spectre protection
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+
+    # 🛡️ Recommended security headers
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; script-src 'self'; style-src 'self'; "
-        "img-src 'self'; font-src 'self'; connect-src 'none'; "
-        "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; "
-        "form-action 'self';"
+        "img-src 'self'; font-src 'self'; object-src 'none'; "
+        "base-uri 'self'; frame-ancestors 'none';"
     )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
-    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
-    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''  # Removes server version leakage
+    response.headers['Server'] = ''  # Removes server header
     return response
 
 @app.route("/")
