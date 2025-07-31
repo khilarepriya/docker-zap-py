@@ -7,9 +7,13 @@ def set_security_headers(response: Response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; script-src 'self'; "
-        "style-src 'self'; object-src 'none'; "
-        "frame-ancestors 'none'; base-uri 'self';"
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self'; "
+        "img-src 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self';"
     )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
@@ -21,10 +25,11 @@ def set_security_headers(response: Response):
 def hello():
     return "ZAP DAST Pipeline is Working!"
 
-# ✅ 404 Error Handler to ensure security headers are applied on all responses
+from flask import make_response
+
 @app.errorhandler(404)
 def not_found(e):
-    return "404 - Not Found", 404
+    return make_response("404 - Not Found", 404)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5020)
