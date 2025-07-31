@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, make_response
 
 app = Flask(__name__)
 
@@ -11,9 +11,11 @@ def set_security_headers(response: Response):
         "script-src 'self'; "
         "style-src 'self'; "
         "img-src 'self'; "
+        "font-src 'self'; "
+        "connect-src 'none'; "
         "object-src 'none'; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self';"
+        "base-uri 'self'; "
+        "frame-ancestors 'none';"
     )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
@@ -24,8 +26,6 @@ def set_security_headers(response: Response):
 @app.route("/")
 def hello():
     return "ZAP DAST Pipeline is Working!"
-
-from flask import make_response
 
 @app.errorhandler(404)
 def not_found(e):
