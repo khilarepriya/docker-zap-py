@@ -6,10 +6,17 @@ app = Flask(__name__)
 def set_security_headers(response: Response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self';"
+    )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    response.headers['Server'] = ''  # Hide server version info
     return response
 
 @app.route("/")
