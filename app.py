@@ -20,15 +20,15 @@ def apply_security_headers(response: Response):
 
 @app.route("/")
 def home():
-    return "ZAP DAST Pipeline is Working!"
+    return make_response("ZAP DAST Pipeline is Working!")
 
 @app.route("/robots.txt")
 def robots():
-    return "User-agent: *\nDisallow:"
+    return Response("User-agent: *\nDisallow:", mimetype="text/plain")
 
 @app.route("/sitemap.xml")
 def sitemap():
-    return "<?xml version='1.0'?><urlset></urlset>"
+    return Response("<?xml version='1.0'?><urlset></urlset>", mimetype="application/xml")
 
 @app.errorhandler(404)
 def not_found(e):
