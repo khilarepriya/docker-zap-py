@@ -14,7 +14,7 @@ def set_security_headers(response: Response):
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''  # Remove version info
+    response.headers['Server'] = ''
     return response
 
 @app.route("/")
@@ -25,8 +25,7 @@ def hello():
 def not_found(e):
     response = make_response("404 - Not Found", 404)
     response.mimetype = "text/html"
-    return set_security_headers(response)
+    return set_security_headers(response)  # << this ensures headers apply
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5020)
-
