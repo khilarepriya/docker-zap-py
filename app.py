@@ -1,35 +1,26 @@
-from flask import Flask, make_response, request
+from flask import Flask, make_response
 
 app = Flask(__name__)
 
-# 🔐 Central function to add all headers
 def secure_response(content, status=200, mimetype="text/html"):
     response = make_response(content, status)
     response.mimetype = mimetype
 
-    # Required security headers
+    # ✅ Spectre mitigation headers
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+
+    # 🔐 Additional security headers
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
-    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
-    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''  # Removes version info
-
-    # ✅ Fix CSP warning [10055]
+    response.headers['Server'] = ''
     response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; "
-        "script-src 'self'; "
-        "style-src 'self'; "
-        "img-src 'self'; "
-        "font-src 'self'; "
-        "connect-src 'none'; "
-        "media-src 'none'; "
-        "object-src 'none'; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self'; "
-        "form-action 'self';"
+        "default-src 'self'; script-src 'self'; style-src 'self'; "
+        "img-src 'self'; font-src 'self'; connect-src 'none'; "
+        "media-src 'none'; object-src 'none'; frame-ancestors 'none'; "
+        "base-uri 'self'; form-action 'self';"
     )
-
     return response
 
 @app.route("/")
