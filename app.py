@@ -7,15 +7,9 @@ def set_security_headers(response: Response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; "
-        "script-src 'self'; "
-        "style-src 'self'; "
-        "img-src 'self'; "
-        "font-src 'self'; "
-        "connect-src 'none'; "
-        "object-src 'none'; "
-        "base-uri 'self'; "
-        "frame-ancestors 'none';"
+        "default-src 'self'; script-src 'self'; style-src 'self'; "
+        "img-src 'self'; font-src 'self'; connect-src 'none'; "
+        "object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
     )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
