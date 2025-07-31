@@ -1,9 +1,12 @@
-from flask import Flask, Response, make_response
+from flask import Flask, make_response
 
 app = Flask(__name__)
 
-@app.after_request
-def set_security_headers(response: Response):
+# ✅ Utility function to apply security headers
+def secure_response(content, status=200, mimetype="text/html"):
+    response = make_response(content, status)
+    response.mimetype = mimetype
+
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Content-Security-Policy'] = (
@@ -20,25 +23,19 @@ def set_security_headers(response: Response):
 
 @app.route("/")
 def hello():
-    return make_response("ZAP DAST Pipeline is Working!")
+    return secure_response("ZAP DAST Pipeline is Working!")
 
 @app.route("/robots.txt")
 def robots():
-    response = make_response("User-agent: *\nDisallow:")
-    response.mimetype = "text/plain"
-    return response
+    return secure_response("User-agent: *\nDisallow:", mimetype="text/plain")
 
 @app.route("/sitemap.xml")
 def sitemap():
-    response = make_response("<?xml version='1.0'?><urlset></urlset>")
-    response.mimetype = "application/xml"
-    return response
+    return secure_response("<?xml version='1.0'?><urlset></urlset>", mimetype="application/xml")
 
 @app.errorhandler(404)
 def not_found(e):
-    response = make_response("404 - Not Found", 404)
-    response.mimetype = "text/html"
-    return response
+    return secure_response("404 - Not Found", status=404)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5020)
