@@ -2,11 +2,12 @@ from flask import Flask, make_response
 
 app = Flask(__name__)
 
-# ✅ Utility function to apply security headers
+# 🔐 Function to apply all security headers
 def secure_response(content, status=200, mimetype="text/html"):
     response = make_response(content, status)
     response.mimetype = mimetype
 
+    # Security Headers
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Content-Security-Policy'] = (
@@ -18,7 +19,7 @@ def secure_response(content, status=200, mimetype="text/html"):
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''
+    response.headers['Server'] = ''  # Removes server version leakage
     return response
 
 @app.route("/")
