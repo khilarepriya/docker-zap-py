@@ -25,7 +25,7 @@ def hello():
 def not_found(e):
     response = make_response("404 - Not Found", 404)
     response.mimetype = "text/html"
-    return response
+    return set_security_headers(response)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5020)
