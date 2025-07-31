@@ -15,19 +15,29 @@ def set_security_headers(response: Response):
         "connect-src 'none'; "
         "object-src 'none'; "
         "base-uri 'self'; "
-        "frame-ancestors 'none';"
+        "frame-ancestors 'none'; "
+        "form-action 'self';"
     )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''  # Hides version
+    response.headers['Server'] = ''
     return response
 
 @app.route("/")
 def hello():
     return "ZAP DAST Pipeline is Working!"
 
-# ✅ Ensures headers apply to 404 pages too
+# ✅ Serve sitemap.xml and robots.txt to avoid 404
+@app.route("/robots.txt")
+def robots():
+    return "User-agent: *\nDisallow:", 200, {'Content-Type': 'text/plain'}
+
+@app.route("/sitemap.xml")
+def sitemap():
+    return "<?xml version='1.0'?><urlset></urlset>", 200, {'Content-Type': 'application/xml'}
+
+# ✅ Ensure 404s still return secure headers
 @app.errorhandler(404)
 def not_found(e):
     response = make_response("404 - Not Found", 404)
