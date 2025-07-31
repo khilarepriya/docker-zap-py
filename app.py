@@ -14,7 +14,7 @@ def set_security_headers(response: Response):
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''
+    response.headers['Server'] = ''  # Remove version info
     return response
 
 @app.route("/")
