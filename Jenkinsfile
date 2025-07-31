@@ -49,7 +49,9 @@ pipeline {
           # Ensure file and directory exist with writable permissions
           mkdir -p $WORKSPACE
           touch $WORKSPACE/gen.conf
-          chmod -R 777 $WORKSPACE
+          touch $WORKSPACE/zap_report.html
+          chmod 777 $WORKSPACE
+          chmod 666 $WORKSPACE/gen.conf $WORKSPACE/zap_report.html
         '''
       }
     }
