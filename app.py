@@ -9,6 +9,7 @@ def set_security_headers(response: Response):
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
         "script-src 'self'; "
+        "style-src 'self'; "
         "object-src 'none'; "
         "frame-ancestors 'none'; "
         "base-uri 'self';"
@@ -16,8 +17,9 @@ def set_security_headers(response: Response):
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    response.headers['Server'] = ''  # Hide server version info
+    response.headers['Server'] = ''
     return response
+
 
 @app.route("/")
 def hello():
