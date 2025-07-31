@@ -7,15 +7,9 @@ def set_security_headers(response: Response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; "
-        "script-src 'self'; "
-        "style-src 'self'; "
-        "img-src 'self'; "
-        "font-src 'self'; "
-        "connect-src 'none'; "
-        "object-src 'none'; "
-        "base-uri 'self'; "
-        "frame-ancestors 'none'; "
+        "default-src 'self'; script-src 'self'; style-src 'self'; "
+        "img-src 'self'; font-src 'self'; connect-src 'none'; "
+        "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; "
         "form-action 'self';"
     )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
@@ -28,16 +22,18 @@ def set_security_headers(response: Response):
 def hello():
     return "ZAP DAST Pipeline is Working!"
 
-# ✅ Serve sitemap.xml and robots.txt to avoid 404
 @app.route("/robots.txt")
 def robots():
-    return "User-agent: *\nDisallow:", 200, {'Content-Type': 'text/plain'}
+    response = make_response("User-agent: *\nDisallow:")
+    response.mimetype = "text/plain"
+    return response  # goes through after_request
 
 @app.route("/sitemap.xml")
 def sitemap():
-    return "<?xml version='1.0'?><urlset></urlset>", 200, {'Content-Type': 'application/xml'}
+    response = make_response("<?xml version='1.0'?><urlset></urlset>")
+    response.mimetype = "application/xml"
+    return response  # goes through after_request
 
-# ✅ Ensure 404s still return secure headers
 @app.errorhandler(404)
 def not_found(e):
     response = make_response("404 - Not Found", 404)
