@@ -43,6 +43,17 @@ pipeline {
       }
     }
 
+    stage('Prepare Workspace for ZAP') {
+      steps {
+        sh '''
+          # Ensure file and directory exist with writable permissions
+          mkdir -p $WORKSPACE
+          touch $WORKSPACE/gen.conf
+          chmod -R 777 $WORKSPACE
+        '''
+      }
+    }
+
     stage('Run ZAP Baseline Scan') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ghcr-creds', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_PAT')]) {
@@ -90,4 +101,3 @@ pipeline {
     }
   }
 }
-
