@@ -46,12 +46,10 @@ pipeline {
     stage('Prepare Workspace for ZAP') {
       steps {
         sh '''
-          # Ensure file and directory exist with writable permissions
           mkdir -p $WORKSPACE
+          rm -f $WORKSPACE/gen.conf $WORKSPACE/zap_report.html
           touch $WORKSPACE/gen.conf
-          touch $WORKSPACE/zap_report.html
-          chmod 777 $WORKSPACE
-          chmod 666 $WORKSPACE/gen.conf $WORKSPACE/zap_report.html
+          chmod 666 $WORKSPACE/gen.conf
         '''
       }
     }
