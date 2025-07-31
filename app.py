@@ -2,6 +2,7 @@ from flask import Flask, Response, make_response
 
 app = Flask(__name__)
 
+# ✅ Apply all security headers to every response
 @app.after_request
 def set_security_headers(response: Response):
     response.headers['X-Frame-Options'] = 'DENY'
@@ -20,25 +21,28 @@ def set_security_headers(response: Response):
 
 @app.route("/")
 def hello():
-    return "ZAP DAST Pipeline is Working!"
+    return make_response("ZAP DAST Pipeline is Working!")
 
+# ✅ Serve robots.txt securely
 @app.route("/robots.txt")
 def robots():
     response = make_response("User-agent: *\nDisallow:")
     response.mimetype = "text/plain"
-    return response  # goes through after_request
+    return response
 
+# ✅ Serve sitemap.xml securely
 @app.route("/sitemap.xml")
 def sitemap():
     response = make_response("<?xml version='1.0'?><urlset></urlset>")
     response.mimetype = "application/xml"
-    return response  # goes through after_request
+    return response
 
+# ✅ Ensure 404s also get headers
 @app.errorhandler(404)
 def not_found(e):
     response = make_response("404 - Not Found", 404)
     response.mimetype = "text/html"
-    return set_security_headers(response)
+    return response
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5020)
