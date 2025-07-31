@@ -2,29 +2,38 @@ from flask import Flask, make_response, request
 
 app = Flask(__name__)
 
-# 🔒 Helper to apply Spectre protection + CSP
+# 🔐 Central function to add all headers
 def secure_response(content, status=200, mimetype="text/html"):
     response = make_response(content, status)
     response.mimetype = mimetype
 
-    # ✅ Required headers for Spectre protection
-    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
-    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-
-    # 🛡️ Recommended security headers
+    # Required security headers
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; script-src 'self'; style-src 'self'; "
-        "img-src 'self'; font-src 'self'; object-src 'none'; "
-        "base-uri 'self'; frame-ancestors 'none';"
-    )
     response.headers['Permissions-Policy'] = "geolocation=(), camera=()"
-    response.headers['Server'] = ''  # Removes server header
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    response.headers['Server'] = ''  # Removes version info
+
+    # ✅ Fix CSP warning [10055]
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self'; "
+        "img-src 'self'; "
+        "font-src 'self'; "
+        "connect-src 'none'; "
+        "media-src 'none'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self';"
+    )
+
     return response
 
 @app.route("/")
-def hello():
+def home():
     return secure_response("ZAP DAST Pipeline is Working!")
 
 @app.route("/robots.txt")
@@ -36,9 +45,8 @@ def sitemap():
     return secure_response("<?xml version='1.0'?><urlset></urlset>", mimetype="application/xml")
 
 @app.errorhandler(404)
-def not_found(e):
+def page_not_found(e):
     return secure_response("404 - Not Found", status=404)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5020)
-
